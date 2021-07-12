@@ -118,7 +118,6 @@ public class TrackCompass implements Listener {
     public void onPlayerMove(PlayerMoveEvent event) {
         if (trackedPlayer != null) {
 
-            Environment trackedPlayerDimension = getTrackedPlayer().getWorld().getEnvironment();
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
                 // set compass target to the tracked player or last dimension location, otherwise if player is the tracked player just set it in front of them
                 saveCoords(player);
