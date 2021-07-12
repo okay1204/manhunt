@@ -53,7 +53,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                 }
             }
             else {
-                Player trackedPlayer = (Player) Bukkit.getPlayer(args[1]);
+                Player trackedPlayer = Bukkit.getPlayer(args[1]);
     
                 if (trackedPlayer == null) {
                     sender.sendMessage(ChatColor.RED + "That player is not online.");
