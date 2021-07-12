@@ -18,6 +18,7 @@ public class Commands implements CommandExecutor, TabCompleter {
     TrackCompass trackCompass;
     private String helpMessage;
     private static final List<String> allCommands = List.of("track", "start");
+    private static final String noPermsMessage = ChatColor.RED + "You do not have permission to use this comannd. (manhunt.setup)";
     
     Commands(TrackCompass trackCompass) {
         this.trackCompass = trackCompass;
@@ -53,20 +54,29 @@ public class Commands implements CommandExecutor, TabCompleter {
                 }
             }
             else {
-                Player trackedPlayer = Bukkit.getPlayer(args[1]);
-    
-                if (trackedPlayer == null) {
-                    sender.sendMessage(ChatColor.RED + "That player is not online.");
-                }
-                else {
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bTracked player is now &3" + trackedPlayer.getName() + "&b."));
-                    trackCompass.setTrackedPlayer(trackedPlayer);
+                if (sender.hasPermission("manhunt.setup")) {
+                    Player trackedPlayer = Bukkit.getPlayer(args[1]);
+        
+                    if (trackedPlayer == null) {
+                        sender.sendMessage(ChatColor.RED + "That player is not online.");
+                    }
+                    else {
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bTracked player is now &3" + trackedPlayer.getName() + "&b."));
+                        trackCompass.setTrackedPlayer(trackedPlayer);
+                    }
+                } else {
+                    sender.sendMessage(noPermsMessage);
                 }
             }
         }
         else if (args[0].equalsIgnoreCase("start")) {
-            // Should include the name of the one being tracked
-            Bukkit.broadcastMessage(ChatColor.AQUA + "Manhunt Started!");
+            if (sender.hasPermission("manhunt.setup")) {
+                // Should include the name of the one being tracked
+                Bukkit.broadcastMessage(ChatColor.AQUA + "Manhunt Started!");
+            }
+            else {
+                sender.sendMessage(noPermsMessage);
+            }
         }
         else {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', helpMessage));
