@@ -22,8 +22,6 @@ public class Main extends JavaPlugin {
     
     Player trackedPlayer;
     boolean gameActive = false;
-    boolean trackDistance;
-    boolean trackYLevel;
     
     @Override
     public void onEnable() {
