@@ -2,10 +2,12 @@ package me.okay.Manhunt;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
@@ -37,44 +39,51 @@ public class ItemManager implements Listener {
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
-        if (main.getGameActive()) {
-            Player player = event.getPlayer();
-    
-            // make sure hunters respawn with compass
-            if (notTrackedPlayer(player)) {
-                player.getInventory().addItem(new ItemStack(Material.COMPASS, 1));
-                player.updateInventory();
-            }
+        if (!main.getGameActive()) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+
+        // make sure hunters respawn with compass
+        if (notTrackedPlayer(player)) {
+            // remove compasses in case player respawned without dying
+            player.getInventory().remove(Material.COMPASS);;
+            player.getInventory().addItem(new ItemStack(Material.COMPASS, 1));
+            player.updateInventory();
         }
     }
 
     @EventHandler
     public void onDropItem(PlayerDropItemEvent event) {
-        if (main.getGameActive()) {
+        if (!main.getGameActive()) {
+            return;
+        }
             
-            // make sure hunters cant drop compasses
-            if (notTrackedPlayer(event.getPlayer()) && event.getItemDrop().getItemStack().getType().equals(Material.COMPASS)) {
-                event.setCancelled(true);
-            }
+        // make sure hunters cant drop compasses
+        if (notTrackedPlayer(event.getPlayer()) && event.getItemDrop().getItemStack().getType().equals(Material.COMPASS)) {
+            event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
-        if (main.getGameActive()) {
-            Player player = event.getEntity();
-    
-            // make sure compasses dont drop on death
-            if (notTrackedPlayer(player)) {
-                event.getDrops().remove(new ItemStack(Material.COMPASS));
+        if (!main.getGameActive()) {
+            return;
+        }
 
-                for (int i = 0; i < event.getDrops().size(); i++) {
-                    ItemStack item = event.getDrops().get(i);
+        Player player = event.getEntity();
 
-                    if (item.getType().equals(Material.COMPASS)) {
-                        event.getDrops().remove(item);
-                        i--;
-                    }
+        // make sure compasses dont drop on death
+        if (notTrackedPlayer(player)) {
+            event.getDrops().remove(new ItemStack(Material.COMPASS));
+
+            for (int i = 0; i < event.getDrops().size(); i++) {
+                ItemStack item = event.getDrops().get(i);
+
+                if (item.getType().equals(Material.COMPASS)) {
+                    event.getDrops().remove(item);
+                    i--;
                 }
             }
         }
