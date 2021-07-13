@@ -31,7 +31,7 @@ public class ItemManager implements Listener {
         }
     }
 
-    private Boolean notTrackedPlayer(Player player) {
+    private boolean notTrackedPlayer(Player player) {
         return !player.getUniqueId().equals(main.getTrackedPlayer().getUniqueId());
     }
 
