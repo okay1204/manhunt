@@ -19,7 +19,7 @@ public class Commands implements CommandExecutor, TabCompleter {
     ItemManager itemManager;
     Main main;
     private String helpMessage;
-    private static final List<String> allCommands = List.of("track", "start");
+    private static final List<String> allCommands = List.of("track", "start", "stop");
     private static final String noPermsMessage = ChatColor.RED + "You do not have permission to use this comannd. (manhunt.setup)";
     
     Commands(Main main) {
@@ -29,6 +29,7 @@ public class Commands implements CommandExecutor, TabCompleter {
         Map<String, String> commands = new HashMap<>();
         commands.put("track [<username>]", "Display the player currently being tracked (username sets the player being tracked)");
         commands.put("start", "Starts the game of manhunt");
+        commands.put("stop", "Ends the game of manhunt");
         
         helpMessage = "&7------[&bManhunt&7]------\n";
     
@@ -80,6 +81,15 @@ public class Commands implements CommandExecutor, TabCompleter {
                     main.setGameActive(true);
                     Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&bThe game of manhunt as begun! &3" + main.getTrackedPlayer().getName() + " &bis being tracked."));
                 }
+            }
+            else {
+                sender.sendMessage(noPermsMessage);
+            }
+        }
+        else if (args[0].equalsIgnoreCase("stop")) {
+            if (sender.hasPermission("manhunt.setup")) {
+                main.setGameActive(false);
+                Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&bThe game of manhunt has been stopped by &3" + sender.getName() + "&b."));
             }
             else {
                 sender.sendMessage(noPermsMessage);
