@@ -17,7 +17,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
 public class TrackCompass implements Listener {
-    Player trackedPlayer;
+    Main main;
 
     // save last coordinates in each dimension so hunters know where to go to reach that dimension
 
@@ -31,16 +31,12 @@ public class TrackCompass implements Listener {
     Map<UUID, Location> netherPortal = new HashMap<>();
     Map<UUID, Location> endPortal = new HashMap<>();
 
-    private boolean isTrackedPlayer(Player player) {
-        return player.getName().equals(trackedPlayer.getName());
+    TrackCompass(Main main) {
+        this.main = main;
     }
 
-    public Player getTrackedPlayer() {
-        return trackedPlayer;
-    }
-    
-    public void setTrackedPlayer(Player trackedPlayer) {
-        this.trackedPlayer = trackedPlayer;
+    private boolean isTrackedPlayer(Player player) {
+        return player.getUniqueId().equals(main.getTrackedPlayer().getUniqueId());
     }
 
     private String getEnvironmentName(Environment environment) {
@@ -82,11 +78,11 @@ public class TrackCompass implements Listener {
                 compassMeta.setLodestoneTracked(false);
 
                 Environment playerDimension = player.getWorld().getEnvironment();
-                Environment trackedPlayerDimension = getTrackedPlayer().getWorld().getEnvironment();
+                Environment trackedPlayerDimension = main.getTrackedPlayer().getWorld().getEnvironment();
                 String compassName = "";
                 // if they are in the same dimension
-                if (playerDimension.equals(getTrackedPlayer().getWorld().getEnvironment())) {
-                    compassName = ChatColor.translateAlternateColorCodes('&', "&bTracking &3&l" + getTrackedPlayer().getName() + " &7- &bIn the " + getEnvironmentName(playerDimension));
+                if (playerDimension.equals(main.getTrackedPlayer().getWorld().getEnvironment())) {
+                    compassName = ChatColor.translateAlternateColorCodes('&', "&bTracking &3&l" + main.getTrackedPlayer().getName() + " &7- &bIn the " + getEnvironmentName(playerDimension));
                 }
                 // otherwise, different names
                 else if (
@@ -104,7 +100,7 @@ public class TrackCompass implements Listener {
                     compassName = ChatColor.translateAlternateColorCodes('&', "&bTracking &f&lEnd Portal &7- &bIn the " + getEnvironmentName(playerDimension));
                 }
                 else if ((playerDimension.equals(Environment.THE_END) && trackedPlayerDimension.equals(Environment.NORMAL))) {
-                    compassName = ChatColor.translateAlternateColorCodes('&', "&3&l" + getTrackedPlayer().getName() + " &bis in the &aOverworld&b???");
+                    compassName = ChatColor.translateAlternateColorCodes('&', "&3&l" + main.getTrackedPlayer().getName() + " &bis in the &aOverworld&b???");
                 }
 
                 compassMeta.setDisplayName(compassName);
@@ -115,8 +111,13 @@ public class TrackCompass implements Listener {
     }
 
     @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
-        if (trackedPlayer != null) {
+    public void onMove(PlayerMoveEvent event) {
+
+        if (!main.getGameActive()) {
+            return;
+        }
+
+        if (main.getTrackedPlayer() != null) {
 
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
                 // set compass target to the tracked player or last dimension location, otherwise if player is the tracked player just set it in front of them
@@ -127,13 +128,13 @@ public class TrackCompass implements Listener {
 
                     
                     // if the hunter and the runner are in the same dimension, just set compass direction to the runner
-                    if (dimension.equals(getTrackedPlayer().getWorld().getEnvironment())) {
-                        setCompass(player, getTrackedPlayer().getLocation());
+                    if (dimension.equals(main.getTrackedPlayer().getWorld().getEnvironment())) {
+                        setCompass(player, main.getTrackedPlayer().getLocation());
                     }
                     
                     // otherwise, set compass direction to the last location they have been in that dimension
                     else {
-                        UUID trackedPlayerId = getTrackedPlayer().getUniqueId();
+                        UUID trackedPlayerId = main.getTrackedPlayer().getUniqueId();
                         UUID playerId = player.getUniqueId();
 
                         // initialize to null so vscode wouldn't annoy me with the squiggle
@@ -161,7 +162,12 @@ public class TrackCompass implements Listener {
     }
 
     @EventHandler
-    public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
+    public void onChangedWorld(PlayerChangedWorldEvent event) {
+
+        if (!main.getGameActive()) {
+            return;
+        }
+        
         Player player = event.getPlayer();
         Environment fromDimension = event.getFrom().getEnvironment();
         Environment toDimension = player.getWorld().getEnvironment();

@@ -16,13 +16,15 @@ import org.bukkit.util.StringUtil;
 
 public class Commands implements CommandExecutor, TabCompleter {
     TrackCompass trackCompass;
+    ItemManager itemManager;
+    Main main;
     private String helpMessage;
     private static final List<String> allCommands = List.of("track", "start");
     private static final String noPermsMessage = ChatColor.RED + "You do not have permission to use this comannd. (manhunt.setup)";
     
-    Commands(TrackCompass trackCompass) {
-        this.trackCompass = trackCompass;
-        
+    Commands(Main main) {
+        this.main = main;
+
         // setting helpMessage
         Map<String, String> commands = new HashMap<>();
         commands.put("track [<username>]", "Display the player currently being tracked (username sets the player being tracked)");
@@ -44,10 +46,10 @@ public class Commands implements CommandExecutor, TabCompleter {
         else if (args[0].equalsIgnoreCase("track")) {
             if (args.length == 1) {
                 // Should send current tracked player
-                Player trackedPlayer = (Player) trackCompass.getTrackedPlayer();
+                Player trackedPlayer = (Player) main.getTrackedPlayer();
 
                 if (trackedPlayer != null) {
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bThe current tracked player is &3" + trackCompass.getTrackedPlayer().getName() + "&b."));
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bThe current tracked player is &3" + main.getTrackedPlayer().getName() + "&b."));
                 }
                 else {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bThere is no player being tracked. Use &9/manhunt track <username> &bto set a player to track."));
@@ -62,7 +64,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                     }
                     else {
                         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bTracked player is now &3" + trackedPlayer.getName() + "&b."));
-                        trackCompass.setTrackedPlayer(trackedPlayer);
+                        main.setTrackedPlayer(trackedPlayer);
                     }
                 } else {
                     sender.sendMessage(noPermsMessage);
@@ -71,8 +73,13 @@ public class Commands implements CommandExecutor, TabCompleter {
         }
         else if (args[0].equalsIgnoreCase("start")) {
             if (sender.hasPermission("manhunt.setup")) {
-                // Should include the name of the one being tracked
-                Bukkit.broadcastMessage(ChatColor.AQUA + "Manhunt Started!");
+                if (main.getTrackedPlayer() == null) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bYou must set a player to track first with &9/manhunt track <username>&b."));
+                }
+                else {
+                    main.setGameActive(true);
+                    Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&bThe game of manhunt as begun! &3" + main.getTrackedPlayer().getName() + " &bis being tracked."));
+                }
             }
             else {
                 sender.sendMessage(noPermsMessage);
