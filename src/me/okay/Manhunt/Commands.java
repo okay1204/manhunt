@@ -1,5 +1,6 @@
 package me.okay.Manhunt;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +20,6 @@ public class Commands implements CommandExecutor, TabCompleter {
     ItemManager itemManager;
     Main main;
     private String helpMessage;
-    private static final List<String> allCommands = List.of("track", "start", "stop");
     private static final String noPermsMessage = ChatColor.RED + "You do not have permission to use this comannd. (manhunt.setup)";
     
     Commands(Main main) {
@@ -30,6 +30,7 @@ public class Commands implements CommandExecutor, TabCompleter {
         commands.put("track [<username>]", "Display the player currently being tracked (username sets the player being tracked)");
         commands.put("start", "Starts the game of manhunt");
         commands.put("stop", "Ends the game of manhunt");
+        commands.put("settings <distance|ylevel> <on|off>", "Toggles different tracking features that compasses get.");
         
         helpMessage = "&7------[&bManhunt&7]------\n";
     
@@ -95,6 +96,55 @@ public class Commands implements CommandExecutor, TabCompleter {
                 sender.sendMessage(noPermsMessage);
             }
         }
+        else if (args[0].equalsIgnoreCase("settings")) {
+
+            String invalidUsageMessage = ChatColor.translateAlternateColorCodes('&', "&4Invalid usage. Correct usage: &c/manhunt settings <distance|ylevel> <on|off>");
+
+            if (sender.hasPermission("manhunt.setup")) {
+
+                if (args.length >= 3) {
+
+                    // determining whether on or off
+                    boolean newValue;
+                    if (args[2].equalsIgnoreCase("on")) {
+                        newValue = true;
+                    }
+                    else if (args[2].equalsIgnoreCase("off")) {
+                        newValue = false;
+                    }
+                    else {
+                        sender.sendMessage(invalidUsageMessage);
+                        return true;
+                    }
+
+                    // checking which setting to apply to
+                    if (args[1].equalsIgnoreCase("distance")) {
+                        main.config.set("track.distance", newValue);
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bDistance tracking " + (newValue ? "&aenabled&b." : "&cdisabled&b.")));
+                    }
+                    else if (args[1].equalsIgnoreCase("ylevel")) {
+                        main.config.set("track.ylevel", newValue);
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bY-Level tracking " + (newValue ? "&aenabled&b." : "&cdisabled&b.")));
+                    }
+                    else {
+                        sender.sendMessage(invalidUsageMessage);
+                        return true;
+                    }
+
+                    try {
+                        main.config.save(main.configFile);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    sender.sendMessage(invalidUsageMessage);
+                }
+            }
+            else {
+                sender.sendMessage(noPermsMessage);
+            }
+        }
         else {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', helpMessage));
         }
@@ -104,6 +154,18 @@ public class Commands implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        return (args.length == 1) ? StringUtil.copyPartialMatches(args[0], allCommands, new ArrayList<>()) : null;
+        if (args.length == 1) {
+            return StringUtil.copyPartialMatches(args[0], List.of("track", "start", "stop", "settings", "help"), new ArrayList<>());
+        }
+        else if (args.length >= 2 && args[0].equalsIgnoreCase("settings")) {
+            if (args.length == 2) {
+                return StringUtil.copyPartialMatches(args[1], List.of("distance", "ylevel"), new ArrayList<>());
+            }
+            else if (args.length == 3) {
+                return StringUtil.copyPartialMatches(args[2], List.of("on", "off"), new ArrayList<>());
+            }
+        }
+        
+        return null;
     }
 }

@@ -80,9 +80,21 @@ public class TrackCompass implements Listener {
                 Environment playerDimension = player.getWorld().getEnvironment();
                 Environment trackedPlayerDimension = main.getTrackedPlayer().getWorld().getEnvironment();
                 String compassName = "";
+
+                boolean distanceTracking = main.config.getBoolean("track.distance");
+                int distance = (int) Math.sqrt(Math.pow(player.getLocation().getX() - location.getX(), 2) + Math.pow(player.getLocation().getY() - location.getY(), 2) + Math.pow(player.getLocation().getZ() - location.getZ(), 2));
+
+                boolean yLevelTracking = main.config.getBoolean("track.ylevel");
+                int ylevel = (int) location.getY();
+
+                String compassNameSuffix = " &7- " + 
+                (distanceTracking ? "&6Distance: &c" + Integer.toString(distance) + "m &7- " : "") +
+                (yLevelTracking ? "&6Y: &c" + Integer.toString(ylevel) + " &7- " : "")
+                + "&bIn the " + getEnvironmentName(playerDimension);
+
                 // if they are in the same dimension
                 if (playerDimension.equals(main.getTrackedPlayer().getWorld().getEnvironment())) {
-                    compassName = ChatColor.translateAlternateColorCodes('&', "&bTracking &3&l" + main.getTrackedPlayer().getName() + " &7- &bIn the " + getEnvironmentName(playerDimension));
+                    compassName = ChatColor.translateAlternateColorCodes('&', "&bTracking &3&l" + main.getTrackedPlayer().getName() + compassNameSuffix);
                 }
                 // otherwise, different names
                 else if (
@@ -94,10 +106,10 @@ public class TrackCompass implements Listener {
                             playerDimension.equals(Environment.NETHER) && trackedPlayerDimension.equals(Environment.THE_END)
                         )
                     ) {
-                    compassName = ChatColor.translateAlternateColorCodes('&', "&bTracking &5&lNether Portal &7- &bIn the " + getEnvironmentName(playerDimension));
+                    compassName = ChatColor.translateAlternateColorCodes('&', "&bTracking &5&lNether Portal" + compassNameSuffix);
                 }
                 else if ((playerDimension.equals(Environment.NORMAL) && trackedPlayerDimension.equals(Environment.THE_END))) {
-                    compassName = ChatColor.translateAlternateColorCodes('&', "&bTracking &f&lEnd Portal &7- &bIn the " + getEnvironmentName(playerDimension));
+                    compassName = ChatColor.translateAlternateColorCodes('&', "&bTracking &f&lEnd Portal" + compassNameSuffix);
                 }
                 else if ((playerDimension.equals(Environment.THE_END) && trackedPlayerDimension.equals(Environment.NORMAL))) {
                     compassName = ChatColor.translateAlternateColorCodes('&', "&3&l" + main.getTrackedPlayer().getName() + " &bis in the &aOverworld&b???");
@@ -167,7 +179,7 @@ public class TrackCompass implements Listener {
         if (!main.getGameActive()) {
             return;
         }
-        
+
         Player player = event.getPlayer();
         Environment fromDimension = event.getFrom().getEnvironment();
         Environment toDimension = player.getWorld().getEnvironment();
@@ -189,7 +201,7 @@ public class TrackCompass implements Listener {
             overworldPortal.put(playerId, player.getLocation());
         }
         else if (toDimension.equals(Environment.NETHER)) {
-            netherPortal.put(playerId, player.getLocation());
+            netherPortal.put(playerId, player.getLocation());   
         }
         else if (toDimension.equals(Environment.THE_END)) {
             endPortal.put(playerId, player.getLocation());
