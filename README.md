@@ -22,7 +22,7 @@ Available settings:
 
 **The distance and y level (if enabled) are displayed on the compass's display name**
 
-#### Config file (nerdy stuff)
+### Config file (nerdy stuff)
 You can also change the tracking settings in the config file located at `YourServer/plugins/Manhunt/config.yml`.
 Default config:
 ```yml
