@@ -34,7 +34,7 @@ track:
 You can change the values from true/false to enable/disable the settings, respectively.
 _Note: If settings are changed using the `/manhunt settings` command, it will automatically update the config file_
 
-# Commands
+## Commands
 - `manhunt track [<username>]"`: Display the player currently being tracked (username sets the player being tracked)
 - `manhunt start`: Starts the game of manhunt
 - `manhunt stop`: Ends the game of manhunt
@@ -42,7 +42,7 @@ _Note: If settings are changed using the `/manhunt settings` command, it will au
 
 _All these commands require the permission `manhunt.setup` to use._
 
-# FAQ
+## FAQ
 
 Q: What if the runner and hunters are in a different dimension?
 A: The hunter's compass will point to the portal that the runner went through. _If the hunters are in a dimension before the runner, the compass will point back to the portal they used._
