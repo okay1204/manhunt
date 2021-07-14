@@ -47,6 +47,9 @@ _All these commands require the permission `manhunt.setup` to use._
 Q: What if the runner and hunters are in a different dimension?
 A: The hunter's compass will point to the portal that the runner went through. _If the hunters are in a dimension before the runner, the compass will point back to the portal they used._
 
+Q: What if a hunter dies?
+A: The hunter will not drop the compass, and will respawn with another one.
+
 _More will be added if needed_
 
 
