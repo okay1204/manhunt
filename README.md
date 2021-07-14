@@ -51,4 +51,4 @@ _More will be added if needed_
 
 
 
-**Please reach out to me if you have any issues through the GitHub Issues page, thank you :)**
+**Please reach out to me if you have any issues through the GitHub Issues page or on discord at okay#2996, thank you :)**
