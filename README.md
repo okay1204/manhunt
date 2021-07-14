@@ -1,7 +1,7 @@
-# Manhunt (For version 1.17.1)
+# Manhunt (Spigot plugin for version 1.17.1)
 Have you ever seen Dream's famous Minecraft manhunt videos and wanted to play it for yourself?
 
-This plugin provides the tools needed to play manhunt for yourself. One player of your choosing will be set as the runner, and every else will be a hunter. The hunters will be given a compass that tracks the runner. The runner wins if s/he beats the game, whilst the hunters are trying to stop the runner.
+This spigot plugin provides the tools needed to play manhunt for yourself. One player of your choosing will be set as the runner, and every else will be a hunter. The hunters will be given a compass that tracks the runner. The runner wins if s/he beats the game, whilst the hunters are trying to stop the runner.
 ## Installation
 Simply download the .jar file from the releases page and drag and drop it into your Spigot server's plugin folder.
 
