@@ -35,7 +35,7 @@ You can change the values from true/false to enable/disable the settings, respec
 _Note: If settings are changed using the `/manhunt settings` command, it will automatically update the config file_
 
 ## Commands
-- `manhunt track [<username>]"`: Display the player currently being tracked (username sets the player being tracked)
+- `manhunt track [<username>]`: Display the player currently being tracked (username sets the player being tracked)
 - `manhunt start`: Starts the game of manhunt
 - `manhunt stop`: Ends the game of manhunt
 - `manhunt settings <distance|ylevel> <on|off>`: Toggles different tracking features that compasses get.
