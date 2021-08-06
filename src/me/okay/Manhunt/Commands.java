@@ -31,6 +31,7 @@ public class Commands implements CommandExecutor, TabCompleter {
         commands.put("start", "Starts the game of manhunt");
         commands.put("stop", "Ends the game of manhunt");
         commands.put("settings <distance|ylevel> <on|off>", "Toggles different tracking features that compasses get.");
+        commands.put("help", "Displays this help menu.");
         
         helpMessage = "&7------[&bManhunt&7]------\n";
     

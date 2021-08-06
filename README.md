@@ -39,6 +39,7 @@ _Note: If settings are changed using the `/manhunt settings` command, it will au
 - `manhunt start`: Starts the game of manhunt
 - `manhunt stop`: Ends the game of manhunt
 - `manhunt settings <distance|ylevel> <on|off>`: Toggles different tracking features that compasses get.
+- `manhunt help`: Displays this help menu.
 
 _All these commands require the permission `manhunt.setup` to use._
 
