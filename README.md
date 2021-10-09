@@ -18,7 +18,7 @@ Use the command `/manhunt settings <setting> <on|off>` to enable or disable a se
 
 Available settings:
 - `distance`: Displays the distance from the hunter to the runner. _Default on._
-- `ylevel`: Displays the height (y level) of the hunter.
+- `ylevel`: Displays the height (y level) of the runner.
 
 **The distance and y level (if enabled) are displayed on the compass's display name**
 
