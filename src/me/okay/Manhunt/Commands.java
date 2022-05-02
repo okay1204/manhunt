@@ -81,7 +81,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                 }
                 else {
                     main.setGameActive(true);
-                    Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&bThe game of manhunt as begun! &3" + main.getTrackedPlayer().getName() + " &bis being tracked."));
+                    Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&bThe game of manhunt has begun! &3" + main.getTrackedPlayer().getName() + " &bis being tracked."));
                 }
             }
             else {
