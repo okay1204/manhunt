@@ -16,14 +16,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 public class Commands implements CommandExecutor, TabCompleter {
-    TrackCompass trackCompass;
-    ItemManager itemManager;
-    Main main;
+    private Manhunt manhunt;
     private String helpMessage;
     private static final String noPermsMessage = ChatColor.RED + "You do not have permission to use this comannd. (manhunt.setup)";
     
-    Commands(Main main) {
-        this.main = main;
+    public Commands(Manhunt manhunt) {
+        this.manhunt = manhunt;
 
         // setting helpMessage
         Map<String, String> commands = new HashMap<>();
@@ -49,10 +47,10 @@ public class Commands implements CommandExecutor, TabCompleter {
         else if (args[0].equalsIgnoreCase("track")) {
             if (args.length == 1) {
                 // Should send current tracked player
-                Player trackedPlayer = (Player) main.getTrackedPlayer();
+                Player trackedPlayer = (Player) manhunt.getTrackedPlayer();
 
                 if (trackedPlayer != null) {
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bThe current tracked player is &3" + main.getTrackedPlayer().getName() + "&b."));
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bThe current tracked player is &3" + manhunt.getTrackedPlayer().getName() + "&b."));
                 }
                 else {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bThere is no player being tracked. Use &9/manhunt track <username> &bto set a player to track."));
@@ -67,7 +65,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                     }
                     else {
                         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bTracked player is now &3" + trackedPlayer.getName() + "&b."));
-                        main.setTrackedPlayer(trackedPlayer);
+                        manhunt.setTrackedPlayer(trackedPlayer);
                     }
                 } else {
                     sender.sendMessage(noPermsMessage);
@@ -76,12 +74,12 @@ public class Commands implements CommandExecutor, TabCompleter {
         }
         else if (args[0].equalsIgnoreCase("start")) {
             if (sender.hasPermission("manhunt.setup")) {
-                if (main.getTrackedPlayer() == null) {
+                if (manhunt.getTrackedPlayer() == null) {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bYou must set a player to track first with &9/manhunt track <username>&b."));
                 }
                 else {
-                    main.setGameActive(true);
-                    Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&bThe game of manhunt has begun! &3" + main.getTrackedPlayer().getName() + " &bis being tracked."));
+                    manhunt.setGameActive(true);
+                    Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&bThe game of manhunt has begun! &3" + manhunt.getTrackedPlayer().getName() + " &bis being tracked."));
                 }
             }
             else {
@@ -90,7 +88,7 @@ public class Commands implements CommandExecutor, TabCompleter {
         }
         else if (args[0].equalsIgnoreCase("stop")) {
             if (sender.hasPermission("manhunt.setup")) {
-                main.setGameActive(false);
+                manhunt.setGameActive(false);
                 Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&bThe game of manhunt has been stopped by &3" + sender.getName() + "&b."));
             }
             else {
@@ -120,11 +118,11 @@ public class Commands implements CommandExecutor, TabCompleter {
 
                     // checking which setting to apply to
                     if (args[1].equalsIgnoreCase("distance")) {
-                        main.config.set("track.distance", newValue);
+                        manhunt.getConfig().set("track.distance", newValue);
                         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bDistance tracking " + (newValue ? "&aenabled&b." : "&cdisabled&b.")));
                     }
                     else if (args[1].equalsIgnoreCase("ylevel")) {
-                        main.config.set("track.ylevel", newValue);
+                        manhunt.getConfig().set("track.ylevel", newValue);
                         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&bY-Level tracking " + (newValue ? "&aenabled&b." : "&cdisabled&b.")));
                     }
                     else {
@@ -133,7 +131,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                     }
 
                     try {
-                        main.config.save(main.configFile);
+                        manhunt.getConfig().save(manhunt.getConfigFile());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

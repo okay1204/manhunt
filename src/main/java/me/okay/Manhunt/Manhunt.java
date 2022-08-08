@@ -11,25 +11,26 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Main extends JavaPlugin {
-    TrackCompass trackCompass = new TrackCompass(this);
-    ItemManager itemManager = new ItemManager(this);
-    Commands commands = new Commands(this);
+public class Manhunt extends JavaPlugin {
+    private TrackCompass trackCompass;
+    private ItemManager itemManager;
+    private Commands commands;
     
-    File configFile;
-    FileConfiguration config;
+    private File configFile;
+    private FileConfiguration config;
     
-    
-    Player trackedPlayer;
-    boolean gameActive = false;
+    private Player trackedPlayer;
+    private boolean gameActive = false;
     
     @Override
     public void onEnable() {
-        
         // adding plugin files
-        
+        trackCompass = new TrackCompass(this);
+        itemManager = new ItemManager(this);
+        commands = new Commands(this);
+
         getCommand("manhunt").setExecutor(commands);
-        
+
         PluginManager pluginManager = getServer().getPluginManager();
         pluginManager.registerEvents(trackCompass, this);
         pluginManager.registerEvents(itemManager, this);
@@ -62,9 +63,13 @@ public class Main extends JavaPlugin {
             e.printStackTrace();
         }
     }
-    
-    @Override
-    public void onDisable() {
+
+    public File getConfigFile() {
+        return configFile;
+    }
+
+    public ItemManager getItemManager() {
+        return itemManager;
     }
 
     public Player getTrackedPlayer() {

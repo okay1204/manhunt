@@ -7,7 +7,6 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,7 +16,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
 public class TrackCompass implements Listener {
-    Main main;
+    Manhunt manhunt;
 
     // save last coordinates in each dimension so hunters know where to go to reach that dimension
 
@@ -31,12 +30,12 @@ public class TrackCompass implements Listener {
     Map<UUID, Location> netherPortal = new HashMap<>();
     Map<UUID, Location> endPortal = new HashMap<>();
 
-    TrackCompass(Main main) {
-        this.main = main;
+    public TrackCompass(Manhunt manhunt) {
+        this.manhunt = manhunt;
     }
 
     private boolean isTrackedPlayer(Player player) {
-        return player.getUniqueId().equals(main.getTrackedPlayer().getUniqueId());
+        return player.getUniqueId().equals(manhunt.getTrackedPlayer().getUniqueId());
     }
 
     private String getEnvironmentName(Environment environment) {
@@ -71,20 +70,20 @@ public class TrackCompass implements Listener {
     // this function is for setting the lodestone of a player's compass to a specific location
     private void setCompass(Player player, Location location) {
         for (ItemStack item : player.getInventory().getContents()) {
-            if (item != null && item.getType().equals(Material.COMPASS)) {
+            if (manhunt.getItemManager().isTrackingCompass(item)) {
                 CompassMeta compassMeta = (CompassMeta) item.getItemMeta();
 
                 compassMeta.setLodestone(location);
                 compassMeta.setLodestoneTracked(false);
 
                 Environment playerDimension = player.getWorld().getEnvironment();
-                Environment trackedPlayerDimension = main.getTrackedPlayer().getWorld().getEnvironment();
+                Environment trackedPlayerDimension = manhunt.getTrackedPlayer().getWorld().getEnvironment();
                 String compassName = "";
 
-                boolean distanceTracking = main.config.getBoolean("track.distance");
+                boolean distanceTracking = manhunt.getConfig().getBoolean("track.distance");
                 int distance = (int) Math.sqrt(Math.pow(player.getLocation().getX() - location.getX(), 2) + Math.pow(player.getLocation().getY() - location.getY(), 2) + Math.pow(player.getLocation().getZ() - location.getZ(), 2));
 
-                boolean yLevelTracking = main.config.getBoolean("track.ylevel");
+                boolean yLevelTracking = manhunt.getConfig().getBoolean("track.ylevel");
                 int ylevel = (int) location.getY();
 
                 String compassNameSuffix = " &7- " + 
@@ -93,8 +92,8 @@ public class TrackCompass implements Listener {
                 + "&bIn the " + getEnvironmentName(playerDimension);
 
                 // if they are in the same dimension
-                if (playerDimension.equals(main.getTrackedPlayer().getWorld().getEnvironment())) {
-                    compassName = ChatColor.translateAlternateColorCodes('&', "&bTracking &3&l" + main.getTrackedPlayer().getName() + compassNameSuffix);
+                if (playerDimension.equals(manhunt.getTrackedPlayer().getWorld().getEnvironment())) {
+                    compassName = ChatColor.translateAlternateColorCodes('&', "&bTracking &3&l" + manhunt.getTrackedPlayer().getName() + compassNameSuffix);
                 }
                 // otherwise, different names
                 else if (
@@ -112,7 +111,7 @@ public class TrackCompass implements Listener {
                     compassName = ChatColor.translateAlternateColorCodes('&', "&bTracking &f&lEnd Portal" + compassNameSuffix);
                 }
                 else if ((playerDimension.equals(Environment.THE_END) && trackedPlayerDimension.equals(Environment.NORMAL))) {
-                    compassName = ChatColor.translateAlternateColorCodes('&', "&3&l" + main.getTrackedPlayer().getName() + " &bis in the &aOverworld&b???");
+                    compassName = ChatColor.translateAlternateColorCodes('&', "&3&l" + manhunt.getTrackedPlayer().getName() + " &bis in the &aOverworld&b???");
                 }
 
                 compassMeta.setDisplayName(compassName);
@@ -125,11 +124,11 @@ public class TrackCompass implements Listener {
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
 
-        if (!main.getGameActive()) {
+        if (!manhunt.getGameActive()) {
             return;
         }
 
-        if (main.getTrackedPlayer() != null) {
+        if (manhunt.getTrackedPlayer() != null) {
 
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
                 // set compass target to the tracked player or last dimension location, otherwise if player is the tracked player just set it in front of them
@@ -140,13 +139,13 @@ public class TrackCompass implements Listener {
 
                     
                     // if the hunter and the runner are in the same dimension, just set compass direction to the runner
-                    if (dimension.equals(main.getTrackedPlayer().getWorld().getEnvironment())) {
-                        setCompass(player, main.getTrackedPlayer().getLocation());
+                    if (dimension.equals(manhunt.getTrackedPlayer().getWorld().getEnvironment())) {
+                        setCompass(player, manhunt.getTrackedPlayer().getLocation());
                     }
                     
                     // otherwise, set compass direction to the last location they have been in that dimension
                     else {
-                        UUID trackedPlayerId = main.getTrackedPlayer().getUniqueId();
+                        UUID trackedPlayerId = manhunt.getTrackedPlayer().getUniqueId();
                         UUID playerId = player.getUniqueId();
 
                         // initialize to null so vscode wouldn't annoy me with the squiggle
@@ -176,7 +175,7 @@ public class TrackCompass implements Listener {
     @EventHandler
     public void onChangedWorld(PlayerChangedWorldEvent event) {
 
-        if (!main.getGameActive()) {
+        if (!manhunt.getGameActive()) {
             return;
         }
 

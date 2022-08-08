@@ -1,0 +1,8 @@
+main: me.okay.Manhunt.Manhunt
+name: Manhunt
+version: 1.2
+author: okay
+api-version: 1.19
+
+commands:
+  manhunt:
